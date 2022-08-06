@@ -1,0 +1,534 @@
+<!DOCTYPE HTML>
+<!--
+	Editorial by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Attenuator Architecture Analysis</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		
+		<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+		<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+								<header id="header">
+									<a href="index.html" class="logo"><strong>Editorial</strong> by HTML5 UP</a>
+									<ul class="icons">
+										<li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+										<li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+										<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+										<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+										<li><a href="#" class="icon brands fa-medium-m"><span class="label">Medium</span></a></li>
+									</ul>
+								</header>
+
+							<!-- Content -->
+								<section>
+									<header class="main">
+										<h1>Attenuator Architecture Analysis</h1>
+									</header>
+									
+									<hr class="major" />
+									
+									<h2>Introduction</h2>
+									<p>Attenuators are ubiquitous in the design of any RF circuitry. They are used for output power leveling, improving broadband matching, and preventing damaging power levels. With such a strong presence in the world of radio frequency electronics it is surprising that not a lot of thought is put into selecting an architecture. Many times, I have seen attenuators selected simply because that is how it has been done in previous designs.</p>
+									<p>This blog attempts to develop a list of differences among the three most common architectures so that one may make a more informed selection.</p>
+									
+									<hr class="major" />
+									
+									<h2>Attenuator Variation</h2>
+									<p>In the classroom it is often implicitly assumed that a resistor does not vary in value – a 5 Ω resistor is always 5 Ω and never changes. While this aids in tackling new topics, it is not practical. Manufacturers give their resistors a tolerance: a percentage value that defines the range of resistance the manufacturer can guarantee based on process variation.</p>
+									<p>The distribution of resistance values depends greatly on the process and selection of the resistor. For the purpose of this article, we will assume the distribution is Gaussian with the tolerance at 6σ and the mean is the list resistance.</p>
+									<p>Process variation is not the only factor effecting the value of a given resistor. Some factors include ambient temperature; ambient pressure; vibration profile of the surface on which it is mounted; self-heating; age of the resistor, and quality of the solder joint.</p>
+									<p>For the most part ambient pressure is ignored since it is quite often that the product being designed is intended for operation in a habitable area. Vibration effects are mostly covered by adding fasteners and board mounts which increase resonant frequency to prevent damaging levels of surface vibration.</p>
+									
+									<h3>Manufacturer Tolerance</h3>
+									<p>In the classroom it is often assumed that a resistor has a defined, unchanging value. While this aids in learning new topics it is not practical. In a real system there are many factors that will cause a component to change value. The first is a manufacturer’s ability to reproduce the value due to variations in their processes. The variation in a manufacturer’s process will cause their product to be within a predetermined acceptable range of values known as the manufacturer’s tolerance.</p>
+									<p>In many cases the actual value may not be of much concern such that higher tolerance components are deemed acceptable for one reason or another. However, in precision applications it is important to understand and minimize these variations.</p>
+									<p>But the question now is how do the determine the resulting effects these variation have on the attenuator at large?</p>
+									
+									<span class="image main"><img src="images/Blog_AttenArch/Attenuator_MinMax.png" alt="" />
+									<p><b>Figure 1:</b><i> Attenuation Variation of Different Architectures Using 1% Resistors</i></p></span>
+									
+									<p>The plot in Figure 1 shows that for low nominal attenuation values (&lt; 10 dB) the tolerance for the attenuation in the pi and tee architectures remains constant. For high values of attenuation (&gt; 10 dB) the attenuation tolerance decreases.</p>
+									<p>The graph shows that the tee and pi architectures have identical plots starting at 1% attenuation variation (using 1% resistors) while the bridged tee architecture decreases in attenuation variation for increasing values of nominal attenuation starting at under 1% tolerance.</p>
+									
+									<h3>Temperature Variation</h3>
+									
+									<span class="image main"><img src="images/Blog_AttenArch/Attenuator_Temperature.png" alt="" />
+									<p><b>Figure 2:</b><i> Attenuation Variation of Different Architectures Using 1% Resistors</i></p></span>
+									
+									<p>From the figure it is quite difficult to see the slope on the lines.
+									<ul> 
+									<li>PI: (-55, 4.982984), (+25, 4.982744),(+85, 4.982691)
+									<li>Tee: (-55, 4.991297), (+25, 4.99123),(+85, 4.991305)
+									<li>BTee: (-55, 4.994567), (+25, 4.994608),(+85, 4.994763)
+									</ul>
+									</p>
+									
+									<hr class="major" />
+									
+									<h2>Bandwidth</h2>
+									<p>Typically, resistors are not considered frequency-dependent since in the ideal case they have no time-dependent behavior. However, a resistor's bandwidth arises from the parasitic components of its packaging, and PCB pads. There is a small amount of lead inductance and end-to-end capacitance (see Figure 2). The parasitic components can be modeled as a series inductor and parallel capacitor. This first order approximation is acceptable for the use of this article.</p>
+									<p>From the document created by Vishay the parasitic components take on the following values for given their flip-chip packages and one wrap lead [1].
+									<ul>
+									<li> 0603 – L = 26.7 pH, C = 40.3 fF</li>
+									<li> 0402 – L = 1.89 pH, C = 26.2 fF</li>
+									<li> 0402 wrap – L = 120.9 pH, C = 39.2 fF</li>
+									<li> 0201 – L = 17.3 fH, C = 20.6 fF</li>
+									</ul>
+									</p>
+									
+									<span class="image main"><img src="images/Blog_AttenArch/Attenuator_PassiveLumpedModel.jpg" alt="" />
+									<p><b>Figure 3:</b><i> Model of Resistor - Taken from Vishay High-Frequency Resistor Document [1]</i></p></span>
+									
+									<p>It is at this point we state that the effects from the mounting fixture and pcb material are assumed to be negligible. This is of course untrue but because LC and CG depend on the pad geometry it is impossible to say what they will be without EM simulation.</p>
+									<p>The following plot is generated using python. The impedance of each resistor in the attenuator is calculated individually at the frequency of interest. Then using the ABCD parameters of the different architecures, the attenuation is calculated. Using these two steps: finding the impedance of the resistors, and calculating the resulting attenuation, the frequency is swept from 100 MHz to 1 THz until the attenuation deviates by more than 0.1 dB in either direction.</p>
+									
+									<span class="image main"><img src="images/Blog_AttenArch/Attenuator_BW.png" alt="" />
+									<p><b>Figure 4:</b><i> 0.1 dB Bandwidth of the Standard Attenuator Architectures</i></p></span>
+									
+									<p>The graph in Figure 3 assumes the use of Vishay's 0402 flip-chip package parasitics. It shows that the order of greatest to smallest bandwidth is consistent over the majority of the attenuation values. It is interesting to see that for intermediate values of attenuation (ranging from 3 dB to about 8 dB) the bridged-tee attenuator actually has the highest bandwidth.</p>
+									
+									<p>To get an idea of the effects that pad capacitave has on the bandwidth of an attenuator the TEE and PI architectures were modeled in Sonnet using the recommended pad geometry from Vishay's 0402 wrap lead. The 3D model of the two architecture are shown in Figure 5 below.</p>
+									
+									<div class="box alt">
+										<div class="row gtr-50 gtr-uniform">
+											<div class="col-4"><span class="image fit"><img src="images/Blog_AttenArch/Attenuator_PiAtten_Sonnet.jpg" alt="" /></span></div>
+											<div class="col-4"><span class="image fit"><img src="images/Blog_AttenArch/Attenuator_TeeAtten_Sonnet.jpg" alt="" /></span></div>
+										</div>
+										<p><b>Figure 5:</b><i> EM Simulation comparing PI and TEE attenuator architectures</i></p>
+									</div>
+									
+									<p>Sonnet Lite only allows simulating with 3 ideal components so the bridged-tee attenuator was left out of the simulation.</p>
+									
+									<div class="box alt">
+										<div class="row gtr-50 gtr-uniform">
+											<div class="col-4"><span class="image fit"><img src="images/Blog_AttenArch/Attenuator_EM_3dB.png" alt="" /></span></div>
+											<div class="col-4"><span class="image fit"><img src="images/Blog_AttenArch/Attenuator_EM_5dB.png" alt="" /></span></div>
+											<div class="col-4"><span class="image fit"><img src="images/Blog_AttenArch/Attenuator_EM_11dB.png" alt="" /></span></div>
+										</div>
+										<p><b>Figure 6:</b><i> EM Simulation comparing PI and TEE attenuator architectures</i></p>
+									</div>
+									
+									<p>Figure 6 shows that the parasitics from the mounting of the 0402 components has a large effect on the bandwidth of the attenuators. The simulation also agrees on a few fronts: the 0.1 dB bandwidth of the TEE and PI attenuator architectures are very similar with the PI architecture being marginally larger. It is interesting to see that this no longer holds true at the 11 dB attenuation case.</p>
+									
+									<hr class="major" />
+									
+									<h2>Power Handling</h2>
+									<p>When dealing with high power applications there are two pieces of information that are vital: the absolute maximum power and the 1 dB compression point.</p>
+									<p>These are found by determining the amount of power that is absorbed by each resistor in the attenuator. The derivation of the power ratio equations for this section are found in Appendix C – Power Distribution.</p>
+									<p>For the 1 dB compression point, the self-heating effect is used to calculate the point where the attenuation value drops by 1 dB. For the absolute maximum power this is calculated as the minimum power that causes one of the resistors to dissipate more than its rated value.</p>
+									
+									<h3>Self-Heating</h3>
+									<p>The ComponentModel.py script has a resistor model that applies the power ratios from Appendix C and the self-heating effects to each individual resistor in the attenuator. This way it is possible to plot the attenuation as it is affected by the combined thermal effects of each resistor. Bear in mind that the traditional temperature coefficient and power de-rating are linear approximations for highly non-linear processes.</p>
+									
+									<span class="image main"><img src="images/Blog_AttenArch/Attenuator_SelfHeatingCompression.png" alt="" />
+									<p><b>Figure 5:</b><i> 1 dB Compression Point Simulated Using 100 ppm TCR at 85 C</i></p></span>
+									
+									<span class="image main"><img src="images/Blog_AttenArch/Attenuator_InputPower.png" alt="" />
+									<p><b>Figure 6:</b><i> Attenuation Versus Input Power Using 100 ppm TCR at 85 C</i></p></span>
+									
+									<p>The graph in Figure 4 shows that the pi attenuator architecture is affected the most by changes in temperature though the point of compression for all the architectures due to temperature effects is above 34 dBm. This point is above any practical power level that will be applied to low power discrete component attenuator. As you will see in the next section the maximum CW power that can be sustained with any of these architectures is far below 34 dBm.</p>
+									
+									<h3>Absolute Maximum</h3>
+									<p>The method for calculating the absolute maximum power deviates slightly from the self-heating method previously mentioned. The power ratios (from input port to individual resistors) are calculated, then compared. The resistor with the largest power ratio is then selected as it will be dissipating the largest amount of the total dissipated power. The power rating of the resistors (in this case 1/16 W) is divided by this ratio to get the input power level that will cause at least one of the resistors to go beyond its rated value. Toss this in a loop over attenuation and you get the following plots.</p>
+									
+									<span class="image main"><img src="images/Blog_AttenArch/Attenuator_AbsRating.png" alt="" />
+									<p><b>Figure 7:</b><i> Maximum Input Power Before Damaging any one of the  Resistors</i></p></span>
+									
+									<p>Figure 7 was produced using a python script following the method provided above. The base assumptions were: 0402 1/16W 1% resistors with 100 ppm TCR. To use this plot for a resistor with a different power rating you will have to convert:</p>
+									
+									<p>
+									\[ P_{in} = \frac{P_{rated}}{\rho_p} \]
+									\[ P'_{in} = \frac{P'_{rated}}{\rho_p} \]
+									\[ P'_{in} = P_{in} \frac{P'_{rated}}{P_{rated}} \]
+									<br />
+									\[ \Delta P_{in} = 10\times log \left( \frac{P'_{in}}{P_{in}} \right) = 10 \times log \left( P'_{rated} \right) + 12.04 \]
+									</p>
+									
+									<p>For example, if we want to instead use a set of resistors rated for 0.125 W then we add 3.01 to the maximum input power taken from the graph. This would give us a maximum of 27 dBm for a 6 dB bridged tee attenuator.</p>
+									
+									<p>
+									\[ \Delta P_{in} = 10 \times log \left( 0.125 \right) + 12.04 = 3.01 \]
+									</p>
+									
+									<hr class="major" />
+									
+									<h2>Failure Analysis</h2>
+									<h3>Failure Mode</h3>
+									
+									<h4>PI</h4>
+									
+									<table>
+										<thead>
+											<tr>
+												<th>Component</th>
+												<th>Open</th>
+												<th>Change</th>
+												<th>Short</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr> 
+												<td>R1</td>
+												<td>Change in attenuation and matching</td>
+												<td>Change in attenuation and matching</td>
+												<td>Short circuit, no signal flow</td>
+											</tr>
+											<tr> 
+												<td>R2</td>
+												<td>Open circuit, no signal flow</td>
+												<td>Change in attenuation and matching</td>
+												<td>Change in attenuation and matching</td>
+											</tr>
+											<tr> 
+												<td>R3</td>
+												<td>Change in attenuation and matching</td>
+												<td>Change in attenuation and matching</td>
+												<td>Short circuit, no signal flow</td>
+											</tr>
+										</tbody>
+									</table>
+									
+									<h4>Tee</h4>
+									<table>
+										<thead>
+											<tr>
+												<th>Component</th>
+												<th>Open</th>
+												<th>Change</th>
+												<th>Short</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr> 
+												<td>R1</td>
+												<td>Open circuit, no signal flow</td>
+												<td>Change in attenuation and matching</td>
+												<td>Change in attenuation and matching</td>
+											</tr>
+											<tr> 
+												<td>R2</td>
+												<td>Change in attenuation and matching</td>
+												<td>Change in attenuation and matching</td>
+												<td>Short circuit, no signal flow</td>
+											</tr>
+											<tr> 
+												<td>R3</td>
+												<td>Open circuit, no signal flow</td>
+												<td>Change in attenuation and matching</td>
+												<td>Change in attenuation and matching</td>
+											</tr>
+										</tbody>
+									</table>
+									
+									<h4>Bridged Tee</h4>
+									<table>
+										<thead>
+											<tr>
+												<th>Component</th>
+												<th>Open</th>
+												<th>Change</th>
+												<th>Short</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr> 
+												<td>R1</td>
+												<td>Change in attenuation and matching</td>
+												<td>Change in attenuation and matching</td>
+												<td>Change in attenuation and matching</td>
+											</tr>
+											<tr> 
+												<td>R2</td>
+												<td>Change in attenuation and matching</td>
+												<td>Change in attenuation and matching</td>
+												<td>Change in attenuation and matching</td>
+											</tr>
+											<tr> 
+												<td>R3</td>
+												<td>Change in attenuation and matching</td>
+												<td>Change in attenuation and matching</td>
+												<td>Change in attenuation and matching</td>												
+											</tr>
+											<tr> 
+												<td>R4</td>
+												<td>Change in attenuation and matching</td>
+												<td>Change in attenuation and matching</td>
+												<td>No attenuation; change in matching</td>
+											</tr>
+										</tbody>
+									</table>
+									
+									<h3>Failure Rate</h3>
+									<p>Failure rate is the number of units failed over a period of time, and is given by the number of Failures In Time (FIT) which is defined as the number of failures expected over 1 million hours of use. The reciprocal is defined as the Mean Time Between Failures (MTBF). The MTBF gives an indication of the expected number of failed units after 1 million hours of operation.</p>
+									
+									<p>The failure rate depends on the many factors including time itself making the analysis of failure rate difficult. A natural "bathtub" curve presents itself over the lifetime of any component. This term describes how component failure is most common at the beginning and end of the components life and is least likely in the middle. For the analyses to make any sense we assume that we are operating within the bottom of the bathtub.</p>
+									<p>Until now we have made no assumption on the resistor style. For this section we will assume the we are using a fixed film chip (as listed in [3]) operating at 50 C, 0.05W, and are stressed by 0.05/0.125 = 0.4. We obtain the failure rate of each resistor using the calculation method shown in [2] by Rohm.</p>
+									
+									<p>
+									\[ \lambda_P = \lambda_b \times \pi_T \times \pi_P \times \pi_S \times \pi_Q \times \pi_E \times 10^{-6} \]
+									\[ \lambda_P = 0.0037 \times \pi_T \times \pi_P \times \pi_S \times 3 \times 1 \times 10^{-6} \]
+									</p>
+									
+									<p>The only missing variables at this point are the temperature, loaded power, and stress factors. These factors are selected from the tables shown in [2].
+									
+									<p>
+									\[ \lambda_P = 0.0037 \times 1.3 \times 0.26 \times 1.1 \times 3 \times 1 \times 10^{-6} = 4.12698 \times 10^{-9} \]
+									</p>
+									
+									<p>This provides the total failure rate for the resistor. In order to seperate into the possible failures modes of the resistor, the resistor type must be known. Since for this section we are assuming a fixed film chip I will use the distribution in [3].</p>
+									
+									<table>
+										<thead>
+											<tr>
+												<th>Component</th>
+												<th>Open (50%)</th>
+												<th>Change (45%)</th>
+												<th>Short (5%)</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr> 
+												<td>R1</td>
+												<td>\(2.06 \times 10^{-9}\)</td>
+												<td>\(1.85 \times 10^{-9}\)</td>
+												<td>\(0.21 \times 10^{-9}\)</td>
+											</tr>
+											<tr> 
+												<td>R2</td>
+												<td>\(2.06 \times 10^{-9}\)</td>
+												<td>\(1.85 \times 10^{-9}\)</td>
+												<td>\(0.21 \times 10^{-9}\)</td>
+											</tr>
+											<tr> 
+												<td>R3</td>
+												<td>\(2.06 \times 10^{-9}\)</td>
+												<td>\(1.85 \times 10^{-9}\)</td>
+												<td>\(0.21 \times 10^{-9}\)</td>
+											</tr>
+										</tbody>
+										<tfoot>
+											<tr>
+												<th>Total (Sum)</th>
+												<td>\(6.18 \times 10^{-9}\)</td>
+												<td>\(5.55 \times 10^{-9}\)</td>
+												<td>\(0.63 \times 10^{-9}\)</td>
+											</tr>
+										</tfoot>
+									</table>
+									
+									<span>
+										<b>Pi Structure</b>
+										<ul>
+											<li>Change in attenuation: \( 9.88 \times 10^{-9} \)</li>
+											<li>No signal flow: \( 2.27 \times 10^{-9} \)</li>
+										</ul>
+									</span>
+									
+									<span>
+										<b>Tee Structure</b>
+										<ul>
+											<li>Change in attenuation: \( 8.03 \times 10^{-9} \)</li>
+											<li>No signal flow: \( 4.33 \times 10^{-9} \)</li>
+										</ul>
+									</span>
+									
+									<span>
+										<b>Bridged-Tee Structure</b>
+										<ul>
+											<li>Change in attenuation: \( 16.51 \times 10^{-9} \)</li>
+											<li>No signal flow: \( 0 \times 10^{-9} \)</li>
+										</ul>
+									</span>
+									
+									<h2>Summary</h2>
+									
+									<table>
+										<thead>
+											<tr>
+												<th>Topology</th>
+												<th>Pros</th>
+												<th>Cons</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr> 
+												<td>Pi</td>
+												<td>
+													<ul>
+														<li>Highest bandwidth for large (&gt; 10 dB) and small (&lt; 3 dB) attenuation values</li>
+														<li>Attenuation tolerance decreases as attenuation increases</li>
+													</ul>
+												</td>
+												<td>
+													<ul>
+														<li>Low power handling</li>
+														<li>Highest potential for failing short</li>
+													</ul>
+												</td>
+											</tr>
+											<tr> 
+												<td>Tee</td>
+												<td>
+													<ul>
+														<li>Good BW compromise compared to Pi and Bridged-Tee architectures</li>
+														<li>Attenuation tolerance decreases as attenuation increases</li>
+													</ul>
+												</td>
+												<td>
+													<ul>
+														<li>Low power handling</li>
+														<li>Highest potential for failing open</li>
+													</ul>
+												</td>
+											</tr>
+											<tr> 
+												<td>Bridged Tee</td>
+												<td>
+													<ul>
+														<li>Least likely to lose signal (redundant paths allow signal to flow if any component fails)</li>
+														<li>Lowest overall attenuation tolerance</li>
+														<li>Highest power handling</li>
+														<li>Highest bandwidth between 3 dB and 8 dB</li>
+														<li>Attenuation tolerance decreases as attenuation increases</li>
+													</ul>
+												</td>
+												<td>
+													<ul>
+														<li>Lowest bandwidth outside the 3-8 dB range</li>
+														<li>Costs one extra resistor</li>
+														<li>Sensitive to layout</li>
+													</ul>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</section>
+								<section>
+									<h2>Referenced Documents</h2>
+									<p>
+									[1] <a href="https://www.vishay.com/docs/60107/freqresp.pdf">Frequency Response of Thin Film Chip Resistors</a><br />
+									[2] <a href="http://rohmfs.rohm.com/en/products/databook/operation/passive/resistor/common/r_failure_rate.pdf">Presumend Failure Rate Based on MIL Std</a><br />
+									[3] <a href="https://www.navsea.navy.mil/Portals/103/Documents/NSWC_Crane/SD-18/ResistorsFailure.pdf">Resistors Failure Mechanisms and Anomalies</a><br />
+									[4] <a href="http://processoperations.com/HazIDRA/HZ_Chp02a.htm">Failure Rate, Reliability, and Probability</a><br />
+									[5] <a href="https://www.vishay.com/docs/53014/ch-cha.pdf">High Frequency 70 GHz Thin Film Chip Resistor Datasheet</a>
+									</p>
+								</section>
+
+						</div>
+					</div>
+
+				<!-- Sidebar -->
+					<div id="sidebar">
+						<div class="inner">
+
+							<!-- Search -->
+								<section id="search" class="alt">
+									<form method="post" action="#">
+										<input type="text" name="query" id="query" placeholder="Search" />
+									</form>
+								</section>
+
+							<!-- Menu -->
+								<nav id="menu">
+									<header class="major">
+										<h2>Menu</h2>
+									</header>
+									<ul>
+										<li><a href="index.html">Homepage</a></li>
+										<li><a href="about.html">About</a></li>
+										<li><a href="elements.html">Elements</a></li>
+										<li>
+											<span class="opener">Projects</span>
+											<ul>
+												<li><a href="#">Configurable Radar</a></li>
+												<li><a href="#">RF Switch Controller</a></li>
+												<li><a href="#">Smart Home - Wireless Communications</a></li>
+											</ul>
+										</li>
+										<li>
+											<span class="opener">Blog Posts</span>
+											<ul>
+												<li><a href="AttenuatorArchitectureSelection.html">Attenuator Selection</a></li>
+												<li><a href="RFDesignGrowth-Part1.html">RF Design - Part 1</a></li>
+												<li><a href="RFDesignGrowth-Part2.html">RF Design - Part 2</a></li>
+												<li><a href="#">RADAR</a></li>
+											</ul>
+										</li>
+									</ul>
+								</nav>
+
+							<!-- Section -->
+								<section>
+									<header class="major">
+										<h2>Recent</h2>
+									</header>
+									<div class="mini-posts">
+										<article>
+											<a href="AttenuatorArchitectureSelection.html" class="image"><img src="images/Blog_AttenArch/Attenuator_PiAtten_Sonnet.jpg" alt="" /></a>
+											<p>Comparing common attenuator architectures</p>
+										</article>
+										<article>
+											<a href="RFDesignGrowth-Part1.html" class="image"><img src="images/Growth-pt1/tong-zhou-eHE-uhLV5-I-unsplash.jpg" alt="" /></a>
+											<p>Sharing what I've learned since university - part 1</p>
+										</article>
+										<article>
+											<a href="RFDesignGrowth-Part2.html" class="image"><img src="images/pic09.jpg" alt="" /></a>
+											<p>Sharing what I've learned since university - part 2</p>
+										</article>
+									</div>
+									<ul class="actions">
+										<li><a href="#" class="button">More</a></li>
+									</ul>
+								</section>
+
+							<!-- Section -->
+								<section>
+									<header class="major">
+										<h2>Get in touch</h2>
+									</header>
+									<p>Feel free to reach out to me if you find any of the information is misleading or incorrect </p>
+									<ul class="contact">
+										<li class="icon solid fa-envelope"><a href="#">information@untitled.tld</a></li>
+										<li class="icon solid fa-phone">(000) 000-0000</li>
+										<li class="icon solid fa-home">1234 Somewhere Road #8254<br />
+										Nashville, TN 00000-0000</li>
+									</ul>
+								</section>
+
+							<!-- Footer -->
+								<footer id="footer">
+									<p class="copyright">&copy; 2022. All rights reserved. <br />
+									Demo Images: <a href="https://unsplash.com">Unsplash</a> <br />
+									Design: <a href="https://html5up.net">HTML5 UP</a></p>
+								</footer>
+						</div>
+					</div>
+
+
+			</div>
+			
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>
