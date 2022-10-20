@@ -356,6 +356,8 @@
 										</ul>
 									</span>
 									
+									<hr class="major" />
+									
 									<h2>Summary</h2>
 									
 									<table>
@@ -429,7 +431,109 @@
 									[5] <a href="https://www.vishay.com/docs/53014/ch-cha.pdf">High Frequency 70 GHz Thin Film Chip Resistor Datasheet</a>
 									</p>
 								</section>
-
+								
+								<section>
+								<h2>Appendix Definitions</h2>
+								<p>The following appendices use the definitions,</p>
+								<p>\[ a = {10}^{\frac{atten}{20}} \]</p>
+								<p>\[ \alpha = {10}^{-\frac{atten}{10}} = \frac{1}{a^2} \]</p>
+								<p>\[ S_{21} = \frac{1}{2} \left( A + \frac{B}{Z_0} + C Z_0 + D \right) \]</p>
+								<p>\[ atten = -20\times {log}_{10} \left( S_{21} \right) \]</p>
+								
+								<span class="image"><img src="images/Blog_AttenArch/Attenuator_Pi.png" alt="" />
+								<p><b>Figure 8:</b><i> Resistor Definitions for the PI attenuator</i></p></span>
+								
+								<span class="image"><img src="images/Blog_AttenArch/Attenuator_Tee.png" alt="" />
+								<p><b>Figure 9:</b><i> Resistor Definitions for the TEE attenuator</i></p></span>
+								
+								<span class="image"><img src="images/Blog_AttenArch/Attenuator_BTee.png" alt="" />
+								<p><b>Figure 10:</b><i> Resistor Definitions for the Bridged TEE attenuator</i></p></span>
+								
+								<hr class="major" />
+								
+								<h2>Appendix A - Synthesis Formulae</h2>
+								<h3>Pi Attenuator</h3>
+								
+								<p>\[ \begin{aligned} R_1 &= Z_0 \left( \frac{a + 1}{a - 1} \right) \\ R_2 &= Z_0 \left( \frac{a^2 - 1}{2a} \right) \end{aligned}  \]</p>
+								
+								<h3>Tee Attenuator</h3>
+								
+								<p>\[ \begin{aligned} R_1 &= Z_0 \left( \frac{a - 1}{a + 1} \right) \\ R_2 &= Z_0 \left( \frac{2a}{a^2 - 1} \right) \end{aligned}  \]</p>
+								
+								<h3>Bridged-Tee Attenuator</h3>
+								
+								<p>\[ \begin{aligned} R_1 &= Z_0 \left( a - 1 \right) \\ R_2 &= Z_0 \\ R_3 &= Z_0 \\ R_4 &= \frac{Z_0}{a - 1} \end{aligned}  \]</p>
+								
+								<hr class="major" />
+								
+								<h2>Appendix B - Attenuation Formulae</h2>
+								<h3>Pi Attenuator</h3>
+								
+								<p>\[ \begin{bmatrix} A & B \\ C & D \end{bmatrix} = \begin{bmatrix} 1+\frac{R_2}{R_1} & R_2 \\ \frac{1}{R_1} \left( 2+\frac{R_2}{R_1} \right) & 1+\frac{R_2}{R_1} \end{bmatrix} \]</p>
+								
+								<h3>Tee Attenuator</h3>
+								
+								<p>\[ \begin{bmatrix} A & B \\ C & D \end{bmatrix} = \begin{bmatrix} 1+\frac{R_1}{R_2} & R_1 \left( 2+\frac{R_1}{R_2} \right) \\ \frac{1}{R_2}  & 1+\frac{R_1}{R_2} \end{bmatrix} \]</p>
+								
+								<h3>Bridged-Tee Attenuator</h3>
+								
+								<p>\[ \begin{bmatrix} A & B \\ C & D \end{bmatrix} = \begin{bmatrix} 1+\frac{R_1 R_2}{\eta} & R_1 \left( 1-\frac{R_1 R_4}{\eta} \right) \\ \frac{R_1+R_2+R_3}{\eta}  & 1+\frac{R_1 R_3}{\eta} \end{bmatrix} \]</p>
+								<p>\[ \eta = R_4 \left( R_1 + R_2 \right) + R_3 \left( R_2 + R_4 \right) \]</p>
+								
+								<hr class="major" />
+								
+								<h2>Appendix C - Power Distribution</h2>
+								<h3>Pi Attenuator</h3>
+								<table>
+									<thead>
+										<tr>
+											<th>R1</th>
+											<th>R2</th>
+											<th>R3</th>
+										</tr>
+									</thead>
+									<tr>
+										<td><p>\( \begin{aligned} P_1 &= \frac{V_1^2}{2R_1} = \frac{2 p_{in} Z_0}{2R_1} \\ P_1 &= p_{in} \left( \frac{Z_0}{R_1} \right) \\ P_1 &= p_{in} \left( \frac{a - 1}{a + 1} \right) \end{aligned} \)</p></td>
+										<td><p>\( \begin{aligned} P_2 &= \frac{(V_1 - V_2)^2}{2R_2} \\ P_2 &= p_{in} \left( \frac{Z_0}{R_2} \right) \left(1 - \sqrt{\alpha}\right)^2 \\ P_2 &= p_{in} \left[ \frac{2(a - 1)}{a(a + 1)} \right] \end{aligned} \)</p></td>
+										<td><p>\( \begin{aligned} P_3 &= \frac{V_2^2}{2R_3} = \frac{2 \alpha p_{in} Z_0}{2R_3} \\ P_3 &= p_{in} \left( \frac{\alpha Z_0}{R_3} \right) \\ P_3 &= p_{in} \left[ \frac{a - 1}{a^2(a + 1)} \right] \end{aligned} \)</p></td>
+									</tr>
+								</table>
+								
+								<h3>Tee Attenuator</h3>
+								<table>
+									<thead>
+										<tr>
+											<th>R1</th>
+											<th>R2</th>
+											<th>R3</th>
+										</tr>
+									</thead>
+									<tr>
+										<td><p>\( \begin{aligned} P_1 &= \frac{I_1^2 R_1}{2} = \frac{2 p_{in} R_1}{2Z_0} \\ P_1 &= p_{in} \left( \frac{R_1}{Z_0} \right) \\ P_1 &= p_{in} \left( \frac{a - 1}{a + 1} \right) \end{aligned} \)</p></td>
+										<td><p>\( \begin{aligned} P_2 &= \frac{(I_1 - I_2)^2 R_2}{2} \\ P_2 &= p_{in} \left( \frac{R_2}{Z_0} \right) \left(1 - \sqrt{\alpha}\right)^2 \\ P_2 &= p_{in} \left[ \frac{2(a - 1)}{a(a + 1)} \right] \end{aligned} \)</p></td>
+										<td><p>\( \begin{aligned} P_3 &= \frac{I_2^2 R_3}{2} = \frac{2 \alpha p_{in} R_3}{2Z_0} \\ P_3 &= p_{in} \left( \frac{\alpha R_3}{Z_0} \right) \\ P_3 &= p_{in} \left[ \frac{a - 1}{a^2(a + 1)} \right] \end{aligned} \)</p></td>
+									</tr>
+								</table>
+								
+								<h3>Bridged-Tee Attenuator</h3>
+								<table>
+									<thead>
+										<tr>
+											<th>R1</th>
+											<th>R2</th>
+											<th>R3</th>
+											<th>R4</th>
+										</tr>
+									</thead>
+									<tr>
+										<td><p>\( P_1 = p_{in} \left( \frac{a-1}{a^2} \right) \)</p></td>
+										<td><p>\( P_2 = p_{in} \left( \frac{a-1}{a} \right)^2 \)</p></td>
+										<td><p>\( P_3 \approx 0 \)</p></td>
+										<td><p>\( P_4 = p_{in} \left( \frac{a-1}{a^2} \right) \)</p></td>
+									</tr>
+								</table>
+								
+								</section>
 						</div>
 					</div>
 
@@ -451,8 +555,7 @@
 									</header>
 									<ul>
 										<li><a href="index.html">Homepage</a></li>
-										<li><a href="about.html">About</a></li>
-										<li><a href="elements.html">Elements</a></li>
+										<li><a href="#">About</a></li>
 										<li>
 											<span class="opener">Projects</span>
 											<ul>
@@ -468,6 +571,19 @@
 												<li><a href="RFDesignGrowth-Part1.html">RF Design - Part 1</a></li>
 												<li><a href="RFDesignGrowth-Part2.html">RF Design - Part 2</a></li>
 												<li><a href="#">RADAR</a></li>
+											</ul>
+										</li>
+										<li>
+											<span class="opener">Amateur Radio - Basic</span>
+											<ul>
+												<li><a href="#">001 - Regulations and Policies</a></li>
+												<li><a href="#">002 - Operating Procedures</a></li>
+												<li><a href="#">003 - Station Assembly, Practice, and Safety</a></li>
+												<li><a href="#">004 - Circuit Components</a></li>
+												<li><a href="#">005 - Basic Electronics and Theory</a></li>
+												<li><a href="#">006 - Feedlines and Antenna Systems</a></li>
+												<li><a href="#">007 - Radio Wave Propagation</a></li>
+												<li><a href="#">008 - Interference and Suppresion</a></li>
 											</ul>
 										</li>
 									</ul>
@@ -488,12 +604,12 @@
 											<p>Sharing what I've learned since university - part 1</p>
 										</article>
 										<article>
-											<a href="RFDesignGrowth-Part2.html" class="image"><img src="images/pic09.jpg" alt="" /></a>
+											<a href="RFDesignGrowth-Part2.html" class="image"><img src="images/Growth-pt2/nasa-Q1p7bh3SHj8-unsplash.jpg" alt="" /></a>
 											<p>Sharing what I've learned since university - part 2</p>
 										</article>
 									</div>
 									<ul class="actions">
-										<li><a href="#" class="button">More</a></li>
+										<li><a href="BlogSplash.html" class="button">More</a></li>
 									</ul>
 								</section>
 
@@ -519,8 +635,6 @@
 								</footer>
 						</div>
 					</div>
-
-
 			</div>
 			
 		<!-- Scripts -->

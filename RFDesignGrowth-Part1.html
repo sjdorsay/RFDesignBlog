@@ -24,201 +24,209 @@
 						<div class="inner">
 
 							<!-- Header -->
-								<header id="header">
-									<a href="index.html" class="logo"><strong>Editorial</strong> by HTML5 UP</a>
-									<ul class="icons">
-										<li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
-										<li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
-										<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
-										<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
-										<li><a href="#" class="icon brands fa-medium-m"><span class="label">Medium</span></a></li>
-									</ul>
-								</header>
+							<header id="header">
+								<a href="index.html" class="logo"><strong>Editorial</strong> by HTML5 UP</a>
+								<ul class="icons">
+									<li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+									<li><a href="#" class="icon brands fa-medium-m"><span class="label">Medium</span></a></li>
+								</ul>
+							</header>
 
 							<!-- Content -->
-								<section>
-									<header class="main">
-										<h1>RF Design Growth - Part 1</h1>
-									</header>
-
-									<span class="image main">
+							<section>
+								<header class="main">
+									<h1>RF Design Growth - Part 1</h1>
+								</header>
+							
+								<span class="image main">
 									<img src="images/Growth-pt1/tong-zhou-eHE-uhLV5-I-unsplash.jpg" alt="" />
-									<p>Photo by <a href="https://unsplash.com/@zt1970?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">tong zhou</a> on <a href="https://unsplash.com/s/photos/antenna?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></p>
-									</span>
-									
-									<hr class="major" />
-									
-									<h2>Introduction</h2>
-									
-									<p>This post is intended to consolidate what I have learned in the few short years as an RF designer. Due to limited availability of literature the information in these posts will be a compendium of formulation, tests, or application notes. As I continue to learn and and take on larger projects, I will create additional posts in the hopes that these blogs will help others.</p>
-
-									<hr class="major" />
-
-									<h2>Passive Components</h2>
-									<h3>General</h3>
-									<h4>Pad Effects</h4>
-									<p>While the package size is important for high frequency performance the layout can significantly deteriorate the overall performance of the design. One example is the mounting parasitic components. The major contributors to the parasitic components are the pad capacitance and the lead inductance effectively creating an LC low pass filter at all terminals. The pad capacitance become problematic when the width of the pad is larger than the transmission line. The additional capacitance can be approximated as,</p>
-									
-									<p>\[C_{pad} = 2.54 \times 10^7 \left( \frac{L \sqrt{ϵ_R}}{c Z_{pad}} \right) pF\]</p>
-									
-									<p>Where \(Z_{pad}\) is the characteristic impedance of the pad and depends on the pad's width. The length L, in mil, is the length of the pad. And, the speed of light is assumed to be in m/s. Combining the conversion factors of m to mil and F to pF yields the constant \(2.54 \times 10^7 \). This approximation is based on the stepped impedance filter concept for the shunt capacitance; therefore, the approximation is appropriate for large variations in impedance and electrically small lengths L.</p>
-									
-									<p>\[C_{pad} = ϵ_{0}ϵ_{R} \left( \frac{A}{d} \right) F\]</p>
-									
-									<p>There are two possible ways to reduce the impact of the pad capacitances: 
-										<ol>
-											<li>Add ground cutouts beneath the pads to increase \(Z_{pad} \) to a point that is acceptable</li>
-											<li>Increase the width of the transmission line until it is wider than the pad.</li>
-										</ol>
-									</p>
-									
-									<p>The chosen method depends on the constraints presented to the designer. Adding a cutout may be difficult to do if you are constrained by the number of layers alloted for example. On the other hand one may not be able to increase the transmission line width due to stack-up or even maximum designed frequency.</p>
-									
-									<p>Finally, depending on the structure that is being designed one may be able to "absorb" the pad capacitance into the design. For example, the shunt capacitors of a pi filter may be much larger than the pad capacitance such that the design can be more tolerant to these effects.
-									
-									<h4>Lead Effects</h4>
-									
-									<p>Where the pad shape gives rise to parasitic capacitance the component leads (metalization connecting the pads to the internals of the chip) results in inductive parasitics and stray capacitance. There is very little that can be done about this. The magnitude of effect the lead parasitics has, like the pad capacitance, is directly related to the physical size of the packaging.</p>
-									
-									<span class="image"><img src="images/Growth-pt1/Growth_PassiveLumpedModel.jpg" alt="" />
-									<p><b>Figure 1:</b><i> Model of Resistor - Taken from Vishay High-Frequency Resistor Document [1]</i></p></span>
-									
-									<h4>Tolerance</h4>
-									<p>In the classroom it is often assumed that a resistor has a defined, unchanging value. While this aids in learning new topics it is not practical. In a real system there are many factors that will cause a component to change value. The first is a manufacturer’s ability to reproduce the value due to variations in their processes. The variation in a manufacturer’s process will cause their product to be within a predetermined acceptable range of values known as the manufacturer’s tolerance.</p>
-									<p>In many cases the actual value may not be of much concern such that higher tolerance components are deemed acceptable for one reason or another. However, in precision applications it is important to understand and minimize these variations.</p>
-									<p>When working with systems using multiple components in which the total amount of variation is required we can assume the manufacturer's tolerance is normally distributed. With this assumption we can use the fact that the total statistical expectation and variance becomes the sum of both distributions</p>
-									
-									<p>\[ \mu_{\Sigma} = \mu_{A} + \mu_{B} = R_{A} + R_{B} \]</p>
-									<p>\[ \sigma_{\Sigma}^2 = \sigma_{A}^2 + \sigma_{B}^2 = \left(R_A \frac{tol_A}{100}\right)^2 + \left(R_B \frac{tol_B}{100}\right)^2 \]</p>
-									
-									<h3>Resistors</h3>
-									
-									<p>The high frequency characteristics of resistors whose resistance is less than 500 Ohms are determined predominately by package size. At larger resistance values the material used behaves differently causing larger shifts in overall impedance.</p>
-									<p>Information regarding this issue is gained solely from the application note provided by Vishay.</p>
-									<p>The values given in the table above are the related to packaging only. They do not incorporate the parasitic components due to layout. As for all RF circuitry the layout can negatively impact the performance.</p>
-									<span><p>A rule of thumb can be set that for resistances under 500 Ohm. The base assumption is 5% thin film resistors.
-										<ul>
-											<li>0201 – For frequencies less than 8 GHz</li>
-											<li>0402 – For frequencies less than 4 GHz</li>
-											<li>0603 – For frequencies less than 2 GHz</li>
-										</uL>
-									</p></span>
-									
-									<p>Other components exist where this rule of thumb does not apply. For these components careful consideration must be taken with regards to the full design performance to verify their use in the designed system.</p>
-									
-									<h3>Capacitors and Inductors</h3>
-									
-									<blockquote>This section explains the non-ideal behavior of capacitors and inductors at high frequency and helps you choose the right capacitors and inductors for applications such as matching networks, DC blocks, crystals, and power supply decoupling [2].</blockquote>
-									<p>The reactive package effects of capacitors and inductors results in the property known as self-resonant frequency (SRF). This is the frequency where the component package parasitics begin resonating. Past this frequency capacitors behave like inductors and inductors behave like capacitors.</p>
-									<p>The resistive package effects result in lower Q factor. For the fact that capacitors use very low loss ceramic dielectrics; and, inductors are made with long thin windings, the Q factor of capacitors tends to be much higher than the Q factor of inductors.</p>
-									<p>These effects can be exploited when designing to improve DC-feed, or wideband performance.</p>
-									
-									<h4>Capacitors</h4>
-									
-									<p>All capacitors contain parasitic resistance, capacitance, and inductances. Typically these parasitic components can be ignored when designing for low speed application; however, as the operating frequency climbs the effects become more pronounced.</p>
-									
-									<span class="image"><img src="images/Growth-pt1/Growth_CapacitorLumpedModel_Cypress.jpg" alt="" />
-									<p><b>Figure 2:</b><i> Model of Capacitor - Taken from Cypress Antenna Design Document [2]</i></p></span>
-									
-									<p>\[ X_{C} = -\frac{1}{2 \pi f C} \]</p>
-									
-									<p>Figure 2 shows the lumped model of a capacitor presented in [2].</p>
-									<p>Generally the capacitance \( C_{P} \) is much smaller than the manufactured capacitance \( C \). It can be seen in the equation for the reactance (shown above) of a capacitor that the impedance decreases as the operating frequency increases. At low frequencies the reactance across \( C_P \) is relatively larger than that across \( C \) such that the effect of \( C_{P} \) on \( C \) is negligible for low frequencies. As the operating frequency increases \( C_P \) will eventually resonate with \( L \) preventing current from passing through. This point is referred to as the parallel resonant frequency.</p>
-									
-									<p>\[ X_{L} = 2 \pi f L \]</p>
-									
-									<p>The parasitic inductance results from the change in magnetic field around the capacitor as the current oscillates in place and induces an EMF that opposes the changes in current [2].</p>
-									<p>The effective reactance at low frequencies can be appriximated as \( X_C \). But as the frequency increases, \( X_C \) keeps decreasing and \( X_L \) keeps increasing until, at some frequency, \( X_L \) becomes equal to \( X_C \) and the impedance of the capacitor becomes equal to \( R \). This frequency is referred to as the series resonant frequency (SRF) of the capacitor.</p>
-									
-									<h4>Inductors</h4>
-									
-									<span class="image"><img src="images/Growth-pt1/Growth_InductorLumpedModel_Cypress.jpg" alt="" />
-									<p><b>Figure 3:</b><i> Model of Inductor - Taken from Cypress Antenna Design Document [2]</i></p></span>
-									
-									<blockquote>
-									Inductors also contain parasitic capacitance and parasitic resistance apart from inductance. Figure 55 depicts a model of a real inductor.
-									<br \>
-									<br \>
-									\( R_{dc} \) is the ohmic resistance because of the finite conductivity of the inductor. Rac is the frequency-dependent resistance that represents the loss in the inductor core. The parasitic capacitance is a result of the capacitance between the windings in the inductor. Rac is very high at low frequencies and is usually ignored. The effective impedance of the inductor is 
-									\[ X_{eff} = \frac{X_{C_P} (X_L + R_{dc})}{X_{C_P}+X_L+R_{dc}} \]
-									The parasitic capacitance has very high impedance at low frequencies and little impact on the overall impedance as it is parallel to the inductor. As frequency increases, the impedance resulting from the capacitance (X Cp ) decreases, and the impedance resulting from the inductance increases(X L ). XL and XCp eventually become equal in magnitude at some frequency. This frequency is the self resonant frequency (SRF) of the inductor. As Rdc is typically very low, the inductor behaves like an open circuit or high impedance at this frequency.
-									<br \>
-									<br \>
-									Inductors used in the matching network (where inductance value is very important) should have an SRF much above the operating frequencies. When inductors are used for power supply filtering, it is wise to choose inductor values with an SRF close to the noise frequency.
-									</blockquote>
-									
-									
-									<hr class="major" />
-									
-									<h2>Transmission Lines</h2>
-									<h3>Synthetic Transmission Lines</h3>
-									
-									<p>The telegrapher's equations are a set of equations that describe a transmission line that has been broken into it infinitesimal distributed elements.</p>
-									<p>
-									\[ \frac{\partial \nu}{\partial x} = -Ri-L\frac{\partial i}{\partial t} \]
-									\[ \frac{\partial i}{\partial x} = -G\nu-C\frac{\partial \nu}{\partial t} \]
-									</p>
-									
-									<h3>Non-Ideal Effects</h3>
-									
-									<p>In reality the performance of any transmission line is effected by many things some of which are beyond the control of the designer. To list a few,
+									<p>Photo by <a href="https://unsplash.com/@zt1970?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">tong zhou</a> on <a href="https://unsplash.com/">Unsplash</a></p>
+								</span>
+								
+								<hr class="major" />
+								
+								<h2>Introduction</h2>
+								
+								<p>This post is intended to consolidate what I have learned in the few short years as an RF designer. Due to limited availability of literature the information in these posts will be a compendium of formulation, tests, or application notes. As I continue to learn and and take on larger projects, I will create additional posts in the hopes that these blogs will help others.</p>
+							
+								<hr class="major" />
+							
+								<h2>Passive Components</h2>
+								<h3>General</h3>
+								<h4>Pad Effects</h4>
+								<p>While the package size is important for high frequency performance the layout can significantly deteriorate the overall performance of the design. One example is the mounting parasitic components. The major contributors to the parasitic components are the pad capacitance and the lead inductance effectively creating an LC low pass filter at all terminals. The pad capacitance become problematic when the width of the pad is larger than the transmission line. The additional capacitance can be approximated as,</p>
+								
+								<p>\[C_{pad} = 2.54 \times 10^7 \left( \frac{L \sqrt{ϵ_R}}{c Z_{pad}} \right) pF\]</p>
+								
+								<p>Where \(Z_{pad}\) is the characteristic impedance of the pad and depends on the pad's width. The length L, in mil, is the length of the pad. And, the speed of light is assumed to be in m/s. Combining the conversion factors of m to mil and F to pF yields the constant \(2.54 \times 10^7 \). This approximation is based on the stepped impedance filter concept for the shunt capacitance; therefore, the approximation is appropriate for large variations in impedance and electrically small lengths L.</p>
+								
+								<p>\[C_{pad} = ϵ_{0}ϵ_{R} \left( \frac{A}{d} \right) F\]</p>
+								
+								<p>There are two possible ways to reduce the impact of the pad capacitances: 
+									<ol>
+										<li>Add ground cutouts beneath the pads to increase \(Z_{pad} \) to a point that is acceptable</li>
+										<li>Increase the width of the transmission line until it is wider than the pad.</li>
+									</ol>
+								</p>
+								
+								<p>The chosen method depends on the constraints presented to the designer. Adding a cutout may be difficult to do if you are constrained by the number of layers alloted for example. On the other hand one may not be able to increase the transmission line width due to stack-up or even maximum designed frequency.</p>
+								
+								<p>Finally, depending on the structure that is being designed one may be able to "absorb" the pad capacitance into the design. For example, the shunt capacitors of a pi filter may be much larger than the pad capacitance such that the design can be more tolerant to these effects.
+								
+								<h4>Lead Effects</h4>
+								
+								<p>Where the pad shape gives rise to parasitic capacitance the component leads (metalization connecting the pads to the internals of the chip) results in inductive parasitics and stray capacitance. There is very little that can be done about this. The magnitude of effect the lead parasitics has, like the pad capacitance, is directly related to the physical size of the packaging.</p>
+								
+								<span class="image">
+									<img src="images/Growth-pt1/Growth_PassiveLumpedModel.jpg" alt="" />
+									<p><b>Figure 1:</b><i> Model of Resistor - Taken from Vishay High-Frequency Resistor Document [1]</i></p>
+								</span>
+								
+								<h4>Tolerance</h4>
+								<p>In the classroom it is often assumed that a resistor has a defined, unchanging value. While this aids in learning new topics it is not practical. In a real system there are many factors that will cause a component to change value. The first is a manufacturer’s ability to reproduce the value due to variations in their processes. The variation in a manufacturer’s process will cause their product to be within a predetermined acceptable range of values known as the manufacturer’s tolerance.</p>
+								<p>In many cases the actual value may not be of much concern such that higher tolerance components are deemed acceptable for one reason or another. However, in precision applications it is important to understand and minimize these variations.</p>
+								<p>When working with systems using multiple components in which the total amount of variation is required we can assume the manufacturer's tolerance is normally distributed. With this assumption we can use the fact that the total statistical expectation and variance becomes the sum of both distributions</p>
+								
+								<p>\[ \mu_{\Sigma} = \mu_{A} + \mu_{B} = R_{A} + R_{B} \]</p>
+								<p>\[ \sigma_{\Sigma}^2 = \sigma_{A}^2 + \sigma_{B}^2 = \left(R_A \frac{tol_A}{100}\right)^2 + \left(R_B \frac{tol_B}{100}\right)^2 \]</p>
+								
+								<h3>Resistors</h3>
+								
+								<p>The high frequency characteristics of resistors whose resistance is less than 500 Ohms are determined predominately by package size. At larger resistance values the material used behaves differently causing larger shifts in overall impedance.</p>
+								<p>Information regarding this issue is gained solely from the application note provided by Vishay.</p>
+								<p>The values given in the table above are the related to packaging only. They do not incorporate the parasitic components due to layout. As for all RF circuitry the layout can negatively impact the performance.</p>
+								<span><p>A rule of thumb can be set that for resistances under 500 Ohm. The base assumption is 5% thin film resistors.
 									<ul>
-										<li>Temperature</li>
-										<li>Trace etching tolerance</li>
-										<li>Etch back</li>
-										<li>Fiberglass weave</li>
-										<li>Resin content of laminates</li>
-										<li>Material thickness tolerance</li>
-										<li>Surface roughness</li>
-										<li>Fringing fields</li>
+										<li>0201 – For frequencies less than 8 GHz</li>
+										<li>0402 – For frequencies less than 4 GHz</li>
+										<li>0603 – For frequencies less than 2 GHz</li>
+									</uL>
+								</p></span>
+								
+								<p>Other components exist where this rule of thumb does not apply. For these components careful consideration must be taken with regards to the full design performance to verify their use in the designed system.</p>
+								
+								<h3>Capacitors and Inductors</h3>
+								
+								<p>The reactive package effects of capacitors and inductors results in behvaiors such as self-resonant frequency (SRF) whereby the component package parasitics begin resonating. The resistive package effects result in lower Q factor and higher overall losses. These effects can be exploited when designing to improve DC-feed, or wideband performance.</p>
+								<p>The following sections discusses the most prominant internal parasitics and how to design keeping them in mind.</p>
+								
+								<h4>Capacitors</h4>
+								
+								<p>All capacitors contain parasitic resistance, capacitance, and inductances. Typically these parasitic components can be ignored when designing for low speed application; however, as the operating frequency climbs the effects become more pronounced.</p>
+								
+								<span class="image">
+									<img src="images/Growth-pt1/Growth_CapacitorLumpedModel_Cypress.jpg" alt="" />
+									<p><b>Figure 2:</b><i> Model of Capacitor - Taken from Cypress Antenna Design Document [2]</i></p>
+								</span>
+								
+								<p>\[ X_{C} = -\frac{1}{2 \pi f C} \]</p>
+								
+								<p>Figure 2 shows the lumped model of a capacitor presented in [2].</p>
+								
+								<p>Generally the capacitance \( C_{P} \) is much smaller than the manufactured capacitance \( C \). It can be seen in the equation for the reactance (shown above) of a capacitor that the impedance decreases as the operating frequency increases. At low frequencies the reactance across \( C_P \) is relatively larger than that across \( C \) such that the effect of \( C_{P} \) on \( C \) is negligible for low frequencies. As the operating frequency increases \( C_P \) will eventually resonate with \( L \) preventing current from passing through. This point is referred to as the parallel resonant frequency.</p>
+								
+								<p>\[ X_{L} = 2 \pi f L \]</p>
+								
+								<p>The parasitic inductance results from the change in magnetic field around the capacitor as the current oscillates in place and induces an EMF that opposes the changes in current [2].</p>
+								
+								<p>\[ X_{eff} = \frac{X_{C_P} \left(R + X_C + X_L \right)}{R + X_{C_P} + X_C + X_L} \]</p>
+								
+								<p>The effective reactance at low frequencies can be approximated as \( X_C \). But as the frequency increases, \( X_C \) keeps decreasing and \( X_L \) keeps increasing until, at some frequency, \( X_L \) becomes equal to \( X_C \) and the impedance of the capacitor becomes equal to \( R \). This frequency is referred to as the series resonant frequency (SRF) of the capacitor.</p>
+								
+								<p>When selecting an capacitor for, 
+									<ul>
+										<li><b>Matching Network:</b> ensure that the operating frequency is below the SRF</li>
+										<li><b>DC-Blocking:</b> the operating frequency is should be close to the SRF</li>
 									</ul>
-									</p>
-									
-									<p>All of these variables effect the amount of loss and power transfer in a transmission line. There are no closed form equations which include the full extents of these effects. Much of the rule-of-thumbs are based on empirical data. At certain frequencies some of these issues are more prevalent than others so it is up to the designer to choose if it is worth attempting to minimize the errors.</p>
-									
-									<hr class="major" />
-									
-									<h2>Dielectric Materials</h2>
-									
-									<h4>Thermal Effects</h4>
-									<h5>Signal Loss</h5>
-									<p>Temperature has an effect on the amount of energy in a given media. As such conductivity changes with variations in temperature and it can often be nonlinear. However, when dealing with such a small section of temperature (-40C to 85C) compared to the full range it is acceptable to make the assumption that the temperature variations have a linear effect on resistivity.</p>
-									<p>The change in resistivity of conductors will directly affect the conductive losses in the transmission line. Moreover, the change in conductivity of dielectric will directly affect the dissipative losses in the substrate of the transmission line.</p>
-									<p>So it is easy to see that temperature can have a large impact on the performance of a transmission line. This impact will only become more dominant at higher frequencies.</p>
-									<p>There is nothing that can be done for the conductor losses because PCB manufacturers use copper as the choice of metallization which is an almost optimum choice. However, there are plenty of substrates to choose from which gives the designer enough options to have some control over the substrate losses.</p>
-									
-									<h5>Impedance Shift</h5>
-									<p>Materials expand when subjected to higher temperatures and contract when subjected to lower temperature. There are, of course, some exceptions to this statement but we will focus on this case.</p>
-									<p>The expansion and contraction of the substrate changes the physical geometry of a transmission line causing a shift in the impedance of the line. More simply, when the substrate expands the impedance increases (lower distributed capacitance); and, when the substrate contracts the impedance reduces (higher distributed capacitance).</p>
-									
-									<h5>Dielectric Selection</h5>
-									<p>The key parameters of interest are Coefficient of Thermal Expansion (CTE), the loss tangent (or dissipation factor Df), and the dielectric constant (Dk). The CTE parameter describes how much a substrate is expected to expand with a temperature increase of one degree Celsius (or Fahrenheit).</p>
-									
-									<h4>Material Construction Effects</h4>
-									<h5>Fiberglass Weave</h5>
-									<p>Another aspect of PCB material that is not often discussed in educational forums is the fiberglass weave of dielectric materials. The density of the weave can actually alter the dielectric constant. Some construction of materials consist of different weave densities for different directions. For this reason PCB designers route zig-zags to attempt to get a uniform averaged trace impedance.</p>
-									<p>Typically high frequency materials will have higher weave densities to account for the change in effective dielectric constant. In many cases choosing a microwave-frequency material will be enough to ignore this effect.</p>
-									<p>This becomes an issue when there is a push for cost reduction which may cause a designer to consider a sub-optimal dielectric. In this scenario there are a couple things that a designer might try.
-										<ol>
-											<li>Make all transmission lines go in the same direction.</li>
-											<li>Meander all transmission lines to have an averaged impedance.</li>
-										</ol>
-									</p>
-									
-									<h5>Resin Content of Laminates</h5>
-									<p>When a PCB is manufactured laminates are glued together with a resin. The amount of resin used changes the effective dielectric constant. The resin content also changes the board’s sensitivity to changes temperature.</p>
-
-									
-									
-									<hr class="major" />
-									
-									<h2>Referenced Documents</h2>
-									<p>
-									[1] <a href="https://www.vishay.com/docs/60107/freqresp.pdf">Frequency Response of Thin Film Chip Resistors</a><br />
-									[2] <a href="https://www.infineon.com/dgdl/Infineon-AN91445_Antenna_Design_and_RF_Layout_Guidelines-ApplicationNotes-v09_00-EN.pdf?fileId=8ac78c8c7cdc391c017d073e054f6227">Antenna Design and RF Layout Guidelines</a><br />
-									[3] <a href="https://info.knowlescapacitors.com/knowles-precision-devices-capacitor-basics">Introduction to Ceramic Capacitors</a>
-									</p>
-								</section>
+								</p>
+								
+								<h4>Inductors</h4>
+								
+								<span class="image"><img src="images/Growth-pt1/Growth_InductorLumpedModel_Cypress.jpg" alt="" />
+								<p><b>Figure 3:</b><i> Model of Inductor - Taken from Cypress Antenna Design Document [2]</i></p></span>
+								
+								
+								<p>Like capacitors and resistors, inductors have parasitic package components. These are shown in the inductor model shown in Figure 3.</p>
+								<p>\( R_{dc} \) represents the DC metalization resistance of the inductor coils. \( R_{ac} \) is the losses due to the inductor core. \( C_P \) is the combined capacitance between coil windings.</p>
+								
+								<p>\[ X_{eff} = \frac{X_{C_P} \left(X_L + R_{dc} \right)}{X_{C_P}+X_L+R_{dc}} \]</p>
+								
+								<p>\( R_{ac} \) is frequency-dependent and tends to be quite large at low frequencies yielding negligible impact on the effective reactance of the modeled inductor \(X_{eff} \). The frequency where \( L \) and \( C_P \) resonate occurs when \( X_L \) = \( X_{C_P} \) which is referred to as the self-resonant frequency (SRF) of the inductor. At the SRF the impedance approaches \( R_{ac} + R_{dc} \).</p>
+								
+								<p>When selecting an inductor for, 
+									<ul>
+										<li><b>Matching Network:</b> ensure that the operating frequency is below the SRF</li>
+										<li><b>DC-Feed:</b> the operating frequency is should be close to the SRF</li>
+									</ul>
+								</p>
+								
+								<p><b>Note: </b><i>Because capacitors use very low-loss dielectrics \( R \) tends to be much smaller than \( R_{dc} \) of the inductors making their Q-factors much larger than the Q-factor of inductors.</i></p>
+								
+								<hr class="major" />
+								
+								<h2>Transmission Lines</h2>
+								
+								<h3>Non-Ideal Effects</h3>
+								
+								<p>In reality the performance of any transmission line is effected by many things some of which are beyond the control of the designer. To list a few,
+								<ul>
+									<li>Temperature</li>
+									<li>Trace etching tolerance</li>
+									<li>Etch back</li>
+									<li>Fiberglass weave</li>
+									<li>Resin content of laminates</li>
+									<li>Material thickness tolerance</li>
+									<li>Surface roughness</li>
+									<li>Fringing fields</li>
+								</ul>
+								</p>
+								
+								<p>All of these variables effect the amount of loss and power transfer in a transmission line. There are no closed form equations which include the full extents of these effects. At certain frequencies some of these issues are more prevalent than others so it is up to the designer to choose if it is worth attempting to minimize any particular errors.</p>
+								
+								<h4>Thermal Effects</h4>
+								<h5>Signal Loss</h5>
+								<p>Temperature has an effect on the amount of energy in a given media. As such conductivity changes with variations in temperature and it can often be nonlinear. However, when dealing with such a small section of temperature (-40C to 85C) compared to the full range it is acceptable to make the assumption that the temperature variations have a linear effect on resistivity.</p>
+								<p>The change in resistivity of conductors will directly affect the conductive losses in the transmission line. Moreover, the change in conductivity of dielectric will directly affect the dissipative losses in the substrate of the transmission line.</p>
+								<p>So it is easy to see that temperature can have a large impact on the performance of a transmission line. This impact will only become more dominant at higher frequencies.</p>
+								<p>There is nothing that can be done for the conductor losses because PCB manufacturers use copper as the choice of metallization which is an almost optimum choice. However, there are plenty of substrates to choose from which gives the designer enough options to have some control over the substrate losses.</p>
+								
+								<h5>Impedance Shift</h5>
+								<p>Materials expand when subjected to higher temperatures and contract when subjected to lower temperature. There are, of course, some exceptions to this statement but we will focus on this case.</p>
+								<p>The expansion and contraction of the substrate changes the physical geometry of a transmission line causing a shift in the impedance of the line. More simply, when the substrate expands the impedance increases (lower distributed capacitance); and, when the substrate contracts the impedance reduces (higher distributed capacitance).</p>
+								
+								<h5>Dielectric Selection</h5>
+								<p>The key parameters of interest are Coefficient of Thermal Expansion (CTE), the loss tangent (or dissipation factor Df), and the dielectric constant (Dk). The CTE parameter describes how much a substrate is expected to expand with a temperature increase of one degree Celsius (or Fahrenheit).</p>
+								
+								<hr class="major" />
+								
+								<h2>Dielectric Materials</h2>
+								
+								<h4>Material Construction Effects</h4>
+								<h5>Fiberglass Weave</h5>
+								<p>Another aspect of PCB material that is not often discussed in educational forums is the fiberglass weave of dielectric materials. The density of the weave can actually alter the dielectric constant. Some construction of materials consist of different weave densities for different directions. For this reason PCB designers route zig-zags to attempt to get a uniform averaged trace impedance.</p>
+								<p>Typically high frequency materials will have higher weave densities to account for the change in effective dielectric constant. In many cases choosing a microwave-frequency material will be enough to ignore this effect.</p>
+								<p>This becomes an issue when there is a push for cost reduction which may cause a designer to consider a sub-optimal dielectric. In this scenario there are a couple things that a designer might try.
+									<ol>
+										<li>Make all transmission lines go in the same direction.</li>
+										<li>Meander all transmission lines to have an averaged impedance.</li>
+									</ol>
+								</p>
+								
+								<h5>Resin Content of Laminates</h5>
+								<p>When a PCB is manufactured laminates are glued together with a resin. The amount of resin used changes the effective dielectric constant. The resin content also changes the board’s sensitivity to changes temperature.</p>
+								
+								<hr class="major" />
+								
+								<h2>Referenced Documents</h2>
+								<p>
+								[1] <a href="https://www.vishay.com/docs/60107/freqresp.pdf">Frequency Response of Thin Film Chip Resistors</a><br />
+								[2] <a href="https://www.infineon.com/dgdl/Infineon-AN91445_Antenna_Design_and_RF_Layout_Guidelines-ApplicationNotes-v09_00-EN.pdf?fileId=8ac78c8c7cdc391c017d073e054f6227">Antenna Design and RF Layout Guidelines</a><br />
+								[3] <a href="https://info.knowlescapacitors.com/knowles-precision-devices-capacitor-basics">Introduction to Ceramic Capacitors</a>
+								</p>
+							</section>
 						</div>
 					</div>
 
@@ -240,8 +248,7 @@
 									</header>
 									<ul>
 										<li><a href="index.html">Homepage</a></li>
-										<li><a href="about.html">About</a></li>
-										<li><a href="elements.html">Elements</a></li>
+										<li><a href="#">About</a></li>
 										<li>
 											<span class="opener">Projects</span>
 											<ul>
@@ -257,6 +264,19 @@
 												<li><a href="RFDesignGrowth-Part1.html">RF Design - Part 1</a></li>
 												<li><a href="RFDesignGrowth-Part2.html">RF Design - Part 2</a></li>
 												<li><a href="#">RADAR</a></li>
+											</ul>
+										</li>
+										<li>
+											<span class="opener">Amateur Radio - Basic</span>
+											<ul>
+												<li><a href="#">001 - Regulations and Policies</a></li>
+												<li><a href="#">002 - Operating Procedures</a></li>
+												<li><a href="#">003 - Station Assembly, Practice, and Safety</a></li>
+												<li><a href="#">004 - Circuit Components</a></li>
+												<li><a href="#">005 - Basic Electronics and Theory</a></li>
+												<li><a href="#">006 - Feedlines and Antenna Systems</a></li>
+												<li><a href="#">007 - Radio Wave Propagation</a></li>
+												<li><a href="#">008 - Interference and Suppresion</a></li>
 											</ul>
 										</li>
 									</ul>
@@ -277,12 +297,12 @@
 											<p>Sharing what I've learned since university - part 1</p>
 										</article>
 										<article>
-											<a href="RFDesignGrowth-Part2.html" class="image"><img src="images/pic09.jpg" alt="" /></a>
+											<a href="RFDesignGrowth-Part2.html" class="image"><img src="images/Growth-pt2/nasa-Q1p7bh3SHj8-unsplash.jpg" alt="" /></a>
 											<p>Sharing what I've learned since university - part 2</p>
 										</article>
 									</div>
 									<ul class="actions">
-										<li><a href="#" class="button">More</a></li>
+										<li><a href="BlogSplash.html" class="button">More</a></li>
 									</ul>
 								</section>
 
@@ -308,10 +328,8 @@
 								</footer>
 						</div>
 					</div>
-
-
 			</div>
-
+			
 		<!-- Scripts -->
 			<script src="assets/js/jquery.min.js"></script>
 			<script src="assets/js/browser.min.js"></script>
