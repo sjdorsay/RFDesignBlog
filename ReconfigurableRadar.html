@@ -1,0 +1,368 @@
+<!DOCTYPE HTML>
+<!--
+	Editorial by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Reconfigurable Radar</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		
+		<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+		<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+								<header id="header">
+									<a href="index.html" class="logo"><strong>Editorial</strong> by HTML5 UP</a>
+									<ul class="icons">
+										<li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+										<li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+										<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+										<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+										<li><a href="#" class="icon brands fa-medium-m"><span class="label">Medium</span></a></li>
+									</ul>
+								</header>
+
+							<!-- Content -->
+								<section>
+									<header class="main">
+										<h1>Reconfigurable Radar</h1>
+									</header>
+									
+									<hr class="major" />
+									
+									<h2>Introduction</h2>
+									<p>The design of this radar system is intended as an introductory platform for individuals seeking hands-on hardware learning experiences. Upon completion, it is also envisioned to serve as a useful tool for those seeking a hardware platform for conducting investigations.</p>
+									<p>The focus of this article is the prototyping stage. We will examine the design and testing of individual prototypes, ultimately leading to the integration of all prototypes to showcase the proof of concept.</p>
+									
+									<hr class="major" />
+									
+									<h2>Architecture</h2>
+									
+									<span class="image main"><img src="images/ReconfigurableRadar/ConfigurableRadar-BlockDiagram-2023-01-08.png" alt="" />
+									<p><b>Figure 1:</b><i> Reconfigurable Radar architecture</i></p></span>
+									
+									<p>During the initial design phases, multiple iterations of the radar block diagram were devised. The final design of the architecture is depicted in Figure 1. It illustrates the split of the reference clock between the ADC and PLL for synchronous receiving. The ADF4159 PLL, selected for this design, possesses an integrated capability to generate either a continuous wave tone or a linearly frequency modulated signal. This component serves as the core of the Frequency Modulated Continuous Wave (FMCW) aspect of the radar system.									</p>
+									<p>The signal then enters a vector modulator, controlled by a pulse generator circuit, which forms the foundation of the pulsed Continuous Wave (CW) radar. The pulse generator will be described in further detail later on.</p>
+									<p>After the signal generation section is the conditioning section, which employs an equalizer to minimize frequency-dependent gain behavior. This is followed by the integration of a digital step attenuator for temperature and process variation compensation. Lastly, a combination of amplifiers and a power detector are utilized to maintain a consistent output amplitude level of +20 dBm.</p>
+									
+									<hr class="major" />
+									
+									<h2>Single Ended to Differential Amplifier</h2>
+									<h3>Baseband Signaling</h3>
+									
+									<p>Each of the four baseband pins should be driven with 500 mVpp with a common-mode of 500 mV resulting in 1 Vpp swing on each differential baseband input. The output common-mode voltage of AD8132 defaults to half the supply point but there is a pin for providing an external reference for the common-mode voltage.</p>
+									<p>The output common-mode voltage can be as low as 0.3V above the negative supply and 2V below the positive supply. If the input of the amplifier is 3.3V CMOS logic then the gain should be 1/3.3 to give a differential output of 1 Vpp.</p>
+									<p>Since the minimum pulse width will be 10 ns it is necessary that the amplifier is capable of transitioning from 0 V to 1 V in under 1 ns (slew rate > 1000 V/μs). The amplifier must also have a bandwidth high enough to cover the bandwidth of the pulse signal (bandwidth > 100 MHz).</p>
+									<p>The AD8132 is selected as it satisfies the two criteria above with a 3 dB bandwidth of 350 MHz and slew rate of 1200 V/μs.</p>
+									<p>To avoid gain peaking due to wire-bond and pin inductance it is recommended by the manufacturer to add a small value capacitor across the feedback resistor. The value of this capacitor needs to be tuned without optimization.</p>
+									
+									<h3>Analog Gain</h3>
+									
+									<p>The ADL5375 datasheet specifies that the baseband inputs must not exceed a drive level of 1 VPP differential. The current design adopts an On-Off Keying (OOK) method for pulse modulation of the carrier wave, hence only the positive half of the drive level will be used, ranging from 0 V to 0.5 V differential.</p>
+									<p>The ADL5375 comes in two flavours: 0.5 V common-mode and 1.5 V common-mode. The limitations of the AD8132 make us choose the 1.5 V variant.</p>
+									<p>The pulse generator produces single-ended pulses with 3.3 V amplitude. The design utilizes long RF coaxial cables to bring the pulse to the modulator. Reflections need to be minimized over the length of the cable to prevent multiple transmissions of a single pulse. To ensure that reflections are minimized a source and termination impedance of 50 Ω are required. This reduces the pulse amplitude to 1.65 V.</p>
+									<p>Finally, following a similar idea the output of the amplifier is loaded with two 50 Ω before the differential transmission line to the vector modulator. This incurs a gain fact of 0.5 that must be accounted for.</p>
+									
+									<p>\[ A_{sd} = 0.5 \times A_{amp} \times 0.5 \]</p>
+									<p>\[ A_{sd} = \frac{0.5}{3.3} \approx 0.15 \]</p>
+									<p>\[ A_{sd} \implies A_{amp} \approx 0.60 \]</p>
+									
+									<h3>Carrier Feedthrough Nulling</h3>
+									
+									<p>The datasheet of the ADL5375 states that carrier feedthrough can be reduced by introducing a small differential offset to the common-mode voltage at the baseband inputs. To achieve this, a ±10 mV tuning range is recommended for each input. This tuning can be performed using a DAC connected to the single-ended to differential amplifier through a summing node.</p>
+									
+									<hr class="major" />
+									
+									<h2>Pulse Generator</h2>
+									<h3>Architecture Selection</h3>
+									<h4>Delay Line</h4>
+									<ul>
+										<li>Can be programmable with programmable delay line</li>
+										<li>Conceptually easy to understand</li>
+										<li>Requires careful tuning of two independent paths</li>
+									</ul>
+									
+									<h4>Shift Register</h4>
+									<ul>
+										<li>Programmable pulse width in increments of \( \tau = \frac{2}{f_{LO}} \)</li>
+										<li>Requires clock signal at twice the pulse width</li>
+										<li>Requires 3x to 4x shift registers that are able to operate at \( &gt; 2f_{LO} \)</li>
+									</ul>
+									
+									<h4>Voltage Comparator</h4>
+									<h4>Reverse Recovery Diode</h4>
+									<h4>SerDes</h4>
+									
+									<h3>Design</h3>
+									<h4>Component Selection</h4>
+									
+									
+									<p>After researching for some time to select delay line components two fit the bill (with a caveat).</p>
+									<p>The first delay line uses DS1100Z-100+ which has 5 delayed outputs each at certain values. An analog SP4T switch is used to select among the four desired time steps. The -100+ has delays of 10 ns, 20 ns, 30 ns, 40 ns, and 50 ns. These values don’t cover the required 16 MHz pulse width setting; however, the DS1100Z has multiple packages with different delay that can be swapped.</p>
+									
+									<span class="image main"><img src="images/ReconfigurableRadar/ConfigurableRadar-BlockDiagram-PulseGenerator0.png" alt="" />
+									<p><b>Figure 2:</b><i> Attenuation Variation of Different Architectures Using 1% Resistors</i></p></span>
+									
+									<p>The second is the DS1023-25+ which has is a digitally stepped delay line with a reference time delay output pin. The delayed output can be programmed with a resolution of 0.25 ns up to 62.75 ns.</p>
+									
+									<span class="image main"><img src="images/ReconfigurableRadar/ConfigurableRadar-BlockDiagram-PulseGenerator1.png" alt="" />
+									<p><b>Figure 3:</b><i> Attenuation Variation of Different Architectures Using 1% Resistors</i></p></span>
+									
+									<table>
+										<thead>
+											<tr>
+												<th>Parameter</th>
+												<th>Option 1</th>
+												<th>Option 2</th>
+												<th>Remarks</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr> 
+												<td>BOM [CAD]</td>
+												<td>$14.17</td>
+												<td>$27.13</td>
+												<td>Assuming MOQ = 1</td>
+											</tr>
+											<tr> 
+												<td>Area [mm2]</td>
+												<td>48</td>
+												<td>60</td>
+												<td>Sum of component area excluding the AND gate and input Schmitt trigger.</td>
+											</tr>
+										</tbody>
+									</table>
+									
+									<p><b>Note: </b><i>Option 1 assumes that the difference in propagation delay in the INV/BUF package is negligible. It may turn out that the difference is large.</i></p>
+									
+									<p>When cost and size are compared, option 1 appears to be cheaper and provides much of the functionality required with an exception that bandwidth coverage is provided between multiple chips. The preliminary design of the pulse generator has the following components.</p>
+									
+									<p><b>Table 2: </b><i>Component logic levels</i></p>
+									<table>
+										<thead>
+											<tr>
+												<th colspan="2">Logic Level</th>
+												<th>Schmitt</br>74LVC1G17</th>
+												<th>Dual Buffer</br>74AUP2G3404</th>
+												<th>Delay</br>DS1100Z</th>
+												<th>Switch</br>74HC4052D</th>
+												<th>AND</br>74LVC1G08</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<th rowspan='2'>Input</th>
+												<td>Low</td>
+												<td>1.1</td>
+												<td>0.0 - 0.9</td>
+												<td>0.0 - 0.8</td>
+												<td> </td>
+												<td>0.0 - 0.8</td>
+											</tr>
+											<tr>
+												<td>High</td>
+												<td>1.7</td>
+												<td>2.0 - 3.4</td>
+												<td>2.0 - 5.0</td>
+												<td> </td>
+												<td>2.0 - 3.4</td>
+											</tr>
+											<tr>
+												<th rowspan='2'>Output</th>
+												<td>Low</td>
+												<td>0.0 - 0.6</td>
+												<td>0.0 - 0.5</td>
+												<td>0.0 - 0.5</td>
+												<td> </td>
+												<td>0.0 - 0.6</td>
+											</tr>
+											<tr>
+												<td>High</td>
+												<td>2.5 - 3.4</td>
+												<td>2.9 - 3.4</td>
+												<td>4.0 - 5.0</td>
+												<td> </td>
+												<td>2.5 - 3.4</td>
+											</tr>
+											<tr>
+												<th colspan='2'>Supply</th>
+												<td>3.4</td>
+												<td>3.4</td>
+												<td>5.0</td>
+												<td>5.0</td>
+												<td>3.4</td>
+											</tr>
+										</tbody>
+									</table>
+									
+									<p><b>Note: </b><i>The non-inverting/inverting buffer (dual buffer) is placed before the delay line as it does not support 5V. The 74LVC1G08 is selected for the AND gate because it has 5V tolerant digital input pins removing the need for a logic level shifter.</i></p>
+									
+									<h4>Schematic and Simulation</h4>
+									
+									<p>The pulse generator circuit and layout is designed to be a daughter card of a power supply board. The original intention of this design is to prototype both the pulse generator and the single-ended to differenital modulation circuit designed previously. The full schematic can be found <a href="images/ReconfigurableRadar/PulseGenerator_Board_Rev1p0.pdf">here</a>.</p>
+									
+									<p>The design for the modulator was taken from the earlier vector modulator design for this RADAR.</p>
+									
+									<p>The same board-board connector is used for the vector modulator prototype board so that the one power supply can be used for either prototype.</p>
+									
+									<div class="box alt">
+										<div class="row gtr-50 gtr-uniform">
+											<div class="col-4"><span class="image fit"><img src="images/ReconfigurableRadar/PulseGen_Schematic.png" alt="" /></span></div>
+											<div class="col-4"><span class="image fit"><img src="images/ReconfigurableRadar/PulseGen_LTSpice_Simulation.png" alt="" /></span></div>
+											<div class="col-4"><span class="image fit"><img src="images/ReconfigurableRadar/PulseGen_LTSpice_SimulationData.png" alt="" /></span></div>
+										</div>
+										<p><b>Figure 4: </b><i>EM Simulation comparing PI and TEE attenuator architectures</i></p>
+									</div>
+									
+									<h3>Assembly</h3>
+									
+									<p>PCB fabrication and assembly was performed by <a href="https://www.pcbway.com/">PCBWay</a>. Their services are quite competitive and their turn-around (from gerber to assembled card in-hand) was under 1 month here in Ontario, Canada.</p>
+									
+									<div class="box alt">
+										<div class="row gtr-50 gtr-uniform">
+											<div class="col-4"><span class="image fit"><img src="images/ReconfigurableRadar/PulseGen_Layout_TOP.png" alt="" /></span></div>
+											<div class="col-4"><span class="image fit"><img src="images/ReconfigurableRadar/PulseGen_Layout_BOT.png" alt="" /></span></div>
+										</div>
+										<p><b>Figure 5: </b><i>3D view of circuit card design in KiCAD</i></p>
+									</div>
+									
+									<span class="image main"><img src="images/ReconfigurableRadar/PulseGen_Assembly.jpg" alt="" />
+									<p><b>Figure 6: </b><i>Full circuit card assembly installed onto the power supply board</i></p></span>
+									
+									
+								</section>
+								<section>
+									<h2>Referenced Documents</h2>
+									<p>
+									[1] 
+									</p>
+								</section>
+						</div>
+					</div>
+
+				<!-- Sidebar -->
+					<div id="sidebar">
+						<div class="inner">
+
+							<!-- Search -->
+								<section id="search" class="alt">
+									<form method="post" action="#">
+										<input type="text" name="query" id="query" placeholder="Search" />
+									</form>
+								</section>
+
+							<!-- Menu -->
+								<nav id="menu">
+									<header class="major">
+										<h2>Menu</h2>
+									</header>
+									<ul>
+										<li><a href="index.html">Homepage</a></li>
+										<li><a href="About.html">About</a></li>
+										<li>
+											<span class="opener">Projects</span>
+											<ul>
+												<li><a href="#">Configurable Radar</a></li>
+												<li><a href="#">RF Switch Controller</a></li>
+												<li><a href="#">Smart Home - Wireless Communications</a></li>
+											</ul>
+										</li>
+										<li>
+											<span class="opener">Blog Posts</span>
+											<ul>
+												<li><a href="AttenuatorArchitectureSelection.html">Attenuator Selection</a></li>
+												<li><a href="RFDesignGrowth-Part1.html">RF Design - Part 1</a></li>
+												<li><a href="RFDesignGrowth-Part2.html">RF Design - Part 2</a></li>
+												<li><a href="#">RADAR</a></li>
+											</ul>
+										</li>
+										<li>
+											<span class="opener">Amateur Radio - Basic</span>
+											<ul>
+												<li><a href="Amateur-Basic\Section001.html">001 - Regulations and Policies</a></li>
+												<li><a href="Amateur-Basic\Section002.html">002 - Operating Procedures</a></li>
+												<li><a href="Amateur-Basic\Section003.html">003 - Station Assembly, Practice, and Safety</a></li>
+												<li><a href="Amateur-Basic\Section004.html">004 - Circuit Components</a></li>
+												<li><a href="Amateur-Basic\Section005.html">005 - Basic Electronics and Theory</a></li>
+												<li><a href="Amateur-Basic\Section006.html">006 - Feedlines and Antenna Systems</a></li>
+												<li><a href="Amateur-Basic\Section007.html">007 - Radio Wave Propagation</a></li>
+												<li><a href="Amateur-Basic\Section008.html">008 - Interference and Suppresion</a></li>
+											</ul>
+										</li>
+										<li>
+											<span class="opener">Amateur Radio - Morse</span>
+											<ul>
+												<li><a href="Amateur-Morse\MorsePractice.html">Morse Code Practice</a></li>
+											</ul>
+										</li>
+									</ul>
+								</nav>
+
+							<!-- Section -->
+								<section>
+									<header class="major">
+										<h2>Recent</h2>
+									</header>
+									<div class="mini-posts">
+										<article>
+											<a href="AttenuatorArchitectureSelection.html" class="image"><img src="images/Blog_AttenArch/Attenuator_PiAtten_Sonnet.jpg" alt="" /></a>
+											<p>Comparing common attenuator architectures</p>
+										</article>
+										<article>
+											<a href="RFDesignGrowth-Part1.html" class="image"><img src="images/Growth-pt1/tong-zhou-eHE-uhLV5-I-unsplash.jpg" alt="" /></a>
+											<p>Sharing what I've learned since university - part 1</p>
+										</article>
+										<article>
+											<a href="RFDesignGrowth-Part2.html" class="image"><img src="images/Growth-pt2/nasa-Q1p7bh3SHj8-unsplash.jpg" alt="" /></a>
+											<p>Sharing what I've learned since university - part 2</p>
+										</article>
+									</div>
+									<ul class="actions">
+										<li><a href="BlogSplash.html" class="button">More</a></li>
+									</ul>
+								</section>
+
+							<!-- Section -->
+								<section>
+									<header class="major">
+										<h2>Get in touch</h2>
+									</header>
+									<p>Feel free to reach out to me if you find any of the information is misleading or incorrect </p>
+									<ul class="contact">
+										<li class="icon brands fa-github"><a href="https://github.com/sjdorsay">Github</a></li>
+										<li class="icon brands fa-discord"><a href="https://discord.gg/gheNfAHkad">Discord</a></li>
+									</ul>
+								</section>
+
+							<!-- Footer -->
+								<footer id="footer">
+									<p class="copyright">&copy; 2022. All rights reserved. <br />
+									Demo Images: <a href="https://unsplash.com">Unsplash</a> <br />
+									Design: <a href="https://html5up.net">HTML5 UP</a></p>
+								</footer>
+						</div>
+					</div>
+			</div>
+			
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>

@@ -137,10 +137,10 @@
 									<p>The ComponentModel.py script has a resistor model that applies the power ratios from Appendix C and the self-heating effects to each individual resistor in the attenuator. This way it is possible to plot the attenuation as it is affected by the combined thermal effects of each resistor. Bear in mind that the traditional temperature coefficient and power de-rating are linear approximations for highly non-linear processes.</p>
 									
 									<span class="image main"><img src="images/Blog_AttenArch/Attenuator_SelfHeatingCompression.png" alt="" />
-									<p><b>Figure 5:</b><i> 1 dB Compression Point Simulated Using 100 ppm TCR at 85 C</i></p></span>
+									<p><b>Figure 7:</b><i> 1 dB Compression Point Simulated Using 100 ppm TCR at 85 C</i></p></span>
 									
 									<span class="image main"><img src="images/Blog_AttenArch/Attenuator_InputPower.png" alt="" />
-									<p><b>Figure 6:</b><i> Attenuation Versus Input Power Using 100 ppm TCR at 85 C</i></p></span>
+									<p><b>Figure 8:</b><i> Attenuation Versus Input Power Using 100 ppm TCR at 85 C</i></p></span>
 									
 									<p>The graph in Figure 4 shows that the pi attenuator architecture is affected the most by changes in temperature though the point of compression for all the architectures due to temperature effects is above 34 dBm. This point is above any practical power level that will be applied to low power discrete component attenuator. As you will see in the next section the maximum CW power that can be sustained with any of these architectures is far below 34 dBm.</p>
 									
@@ -148,9 +148,9 @@
 									<p>The method for calculating the absolute maximum power deviates slightly from the self-heating method previously mentioned. The power ratios (from input port to individual resistors) are calculated, then compared. The resistor with the largest power ratio is then selected as it will be dissipating the largest amount of the total dissipated power. The power rating of the resistors (in this case 1/16 W) is divided by this ratio to get the input power level that will cause at least one of the resistors to go beyond its rated value. Toss this in a loop over attenuation and you get the following plots.</p>
 									
 									<span class="image main"><img src="images/Blog_AttenArch/Attenuator_AbsRating.png" alt="" />
-									<p><b>Figure 7:</b><i> Maximum Input Power Before Damaging any one of the  Resistors</i></p></span>
+									<p><b>Figure 9:</b><i> Maximum Input Power Before Damaging any one of the  Resistors</i></p></span>
 									
-									<p>Figure 7 was produced using a python script following the method provided above. The base assumptions were: 0402 1/16W 1% resistors with 100 ppm TCR. To use this plot for a resistor with a different power rating you will have to convert:</p>
+									<p>Figure 9 was produced using a python script following the method provided above. The base assumptions were: 0402 1/16W 1% resistors with 100 ppm TCR. To use this plot for a resistor with a different power rating you will have to convert:</p>
 									
 									<p>
 									\[ P_{in} = \frac{P_{rated}}{\rho_p} \]
@@ -555,11 +555,11 @@
 									</header>
 									<ul>
 										<li><a href="index.html">Homepage</a></li>
-										<li><a href="#">About</a></li>
+										<li><a href="About.html">About</a></li>
 										<li>
 											<span class="opener">Projects</span>
 											<ul>
-												<li><a href="#">Configurable Radar</a></li>
+												<li><a href="ReconfigurableRadar.html">Configurable Radar</a></li>
 												<li><a href="#">RF Switch Controller</a></li>
 												<li><a href="#">Smart Home - Wireless Communications</a></li>
 											</ul>
@@ -576,14 +576,20 @@
 										<li>
 											<span class="opener">Amateur Radio - Basic</span>
 											<ul>
-												<li><a href="#">001 - Regulations and Policies</a></li>
-												<li><a href="#">002 - Operating Procedures</a></li>
-												<li><a href="#">003 - Station Assembly, Practice, and Safety</a></li>
-												<li><a href="#">004 - Circuit Components</a></li>
-												<li><a href="#">005 - Basic Electronics and Theory</a></li>
-												<li><a href="#">006 - Feedlines and Antenna Systems</a></li>
-												<li><a href="#">007 - Radio Wave Propagation</a></li>
-												<li><a href="#">008 - Interference and Suppresion</a></li>
+												<li><a href="Amateur-Basic\Section001.html">001 - Regulations and Policies</a></li>
+												<li><a href="Amateur-Basic\Section002.html">002 - Operating Procedures</a></li>
+												<li><a href="Amateur-Basic\Section003.html">003 - Station Assembly, Practice, and Safety</a></li>
+												<li><a href="Amateur-Basic\Section004.html">004 - Circuit Components</a></li>
+												<li><a href="Amateur-Basic\Section005.html">005 - Basic Electronics and Theory</a></li>
+												<li><a href="Amateur-Basic\Section006.html">006 - Feedlines and Antenna Systems</a></li>
+												<li><a href="Amateur-Basic\Section007.html">007 - Radio Wave Propagation</a></li>
+												<li><a href="Amateur-Basic\Section008.html">008 - Interference and Suppresion</a></li>
+											</ul>
+										</li>
+										<li>
+											<span class="opener">Amateur Radio - Morse</span>
+											<ul>
+												<li><a href="Amateur-Morse\MorsePractice.html">Morse Code Practice</a></li>
 											</ul>
 										</li>
 									</ul>
@@ -620,10 +626,8 @@
 									</header>
 									<p>Feel free to reach out to me if you find any of the information is misleading or incorrect </p>
 									<ul class="contact">
-										<li class="icon solid fa-envelope"><a href="#">information@untitled.tld</a></li>
-										<li class="icon solid fa-phone">(000) 000-0000</li>
-										<li class="icon solid fa-home">1234 Somewhere Road #8254<br />
-										Nashville, TN 00000-0000</li>
+										<li class="icon brands fa-github"><a href="https://github.com/sjdorsay">Github</a></li>
+										<li class="icon brands fa-discord"><a href="https://discord.gg/gheNfAHkad">Discord</a></li>
 									</ul>
 								</section>
 

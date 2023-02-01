@@ -1,0 +1,273 @@
+<!DOCTYPE HTML>
+<!--
+	Editorial by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Morse Code Practice</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../assets/css/main.css" />
+		
+		<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+		<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+		<script>
+			const audioFiles = [
+			  'a.mp3', 'b.mp3', 'c.mp3', 'd.mp3', 'e.mp3', 
+			  'f.mp3', 'g.mp3', 'h.mp3', 'i.mp3', 'j.mp3', 
+			  'k.mp3', 'l.mp3', 'm.mp3', 'n.mp3', 'o.mp3', 
+			  'p.mp3', 'q.mp3', 'r.mp3', 's.mp3', 't.mp3', 
+			  'u.mp3', 'v.mp3', 'w.mp3', 'x.mp3', 'y.mp3', 
+			  'z.mp3', '0.mp3', '1.mp3', '2.mp3', '3.mp3', 
+			  '4.mp3', '5.mp3', '6.mp3', '7.mp3',  '8.mp3', 
+			  '9.mp3', 'period.mp3', 'comma.mp3', 'question.mp3',
+			  'slant.mp3', 'dash.mp3'
+			  ];
+			  
+			const charList = [
+			  'a', 'b', 'c', 'd', 'e', 
+			  'f', 'g', 'h', 'i', 'j', 
+			  'k', 'l', 'm', 'n', 'o', 
+			  'p', 'q', 'r', 's', 't', 
+			  'u', 'v', 'w', 'x', 'y', 
+			  'z', '0', '1', '2', '3', 
+			  '4', '5', '6', '7', '8', 
+			  '9', '.', ',', '?',
+			  '\\', '-'
+			  ];
+			
+			var previousIndex = 0;
+			var currentIndex = 0;
+			var temporaryIndex = 0;
+			
+			function loadSong(index)
+			{
+				var player = document.getElementById('audioPlayer');
+				var sourceMp3 = document.getElementById('audioPlayer');
+				
+				sourceMp3.src = 'https://www.arrl.org/files/file/Morse/Characters/' + audioFiles[index];
+				
+				player.load(); //just start buffering (preload)
+				player.play();
+			}
+			
+			function checkAnswer()
+			{
+				// Check if the entered letter is correct
+				var userAnswer = document.getElementsByTagName("input")[0].value;
+				var asciiCode = userAnswer.charCodeAt();
+				
+				// Check if the symbol is a letter
+				if(asciiCode > 64)
+				{
+					MASK = 223; // (191)_10 = (1101 1111)_2
+				
+					userAnswer = asciiCode & MASK; // Set to uppercase
+				
+					temporaryIndex = userAnswer - 65;
+				
+				} else if(asciiCode > 47 && asciiCode < 58)
+				{ // Check if the symbol is a number
+					temporaryIndex = 26 + asciiCode - 48;
+				
+				} else 
+				{ // Check if the symbol is a special character
+					if(46 == asciiCode) temporaryIndex = 36 + 1;
+					if(44 == asciiCode) temporaryIndex = 36 + 2;
+					if(63 == asciiCode) temporaryIndex = 36 + 3;
+					if(47 == asciiCode) temporaryIndex = 36 + 4;
+					if(45 == asciiCode) temporaryIndex = 36 + 5;
+				}
+				
+				document.getElementsByTagName("input")[0].value = (currentIndex == temporaryIndex);
+				document.getElementsByTagName("input")[0].value += ' ' + charList[currentIndex];
+				
+				// Generate random number for selecting file
+				previousIndex = currentIndex;
+				currentIndex = Math.floor(Math.random() * audioFiles.length);
+				
+				loadSong(currentIndex);
+			}
+			
+			
+		</script>
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+								<header id="header">
+									<a href="../index.html" class="logo"><strong>Editorial</strong> by HTML5 UP</a>
+									<ul class="icons">
+										<li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+										<li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+										<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+										<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+										<li><a href="#" class="icon brands fa-medium-m"><span class="label">Medium</span></a></li>
+									</ul>
+								</header>
+
+							<!-- Content -->
+								<section>
+									<header class="main">
+										<h1>Character Practice</h1>
+									</header>
+									
+									<p>I created this tool to make it easier for Morse code learners to practice identifying symbols. It aims to fill the gap in convenient and efficient practice methods for Morse code learners to become familiar with letters in their Morse form.</p>
+									
+									<hr class="major" />
+									
+									<h2>How To Play</h2>
+									
+									<ol>
+										<li>Press the play button to listen to the morse code sound bite [1].</li>
+										<li>In the text box type the character you feel is correct.</li>
+										<li>Click "Submit"
+											<ul>
+												<li>A message will pop-up displaying if you were correct.</li>
+												<li>A new morse code sound bite will be randomly selected.</li>
+											</ul>
+										</li>
+										<li>Repeat the previous steps until you are happy.</li>
+									</ol>
+									
+									<audio id="audioPlayer" controls>
+										<source id="sourceMp3" src="" type="audio/mp3" />
+									</audio>
+									
+									<input type="text" />
+									<button onclick='checkAnswer()' >Submit</button>
+									
+								</section>
+								
+								<section>
+									<h2>Referenced Documents</h2>
+									<p>
+									[1] <a href="http://www.arrl.org/code-characters">ARRL Morse Code Characters</a><br />
+									[2] <a href="http://www.arrl.org/code-practice-files">ARRL Morse Code Practice Files</a><br />
+									</p>
+								</section>
+						</div>
+					</div>
+
+				<!-- Sidebar -->
+					<div id="sidebar">
+						<div class="inner">
+
+							<!-- Search -->
+								<section id="search" class="alt">
+									<form method="post" action="#">
+										<input type="text" name="query" id="query" placeholder="Search" />
+									</form>
+								</section>
+
+							<!-- Menu -->
+								<nav id="menu">
+									<header class="major">
+										<h2>Menu</h2>
+									</header>
+									<ul>
+										<li><a href="..\index.html">Homepage</a></li>
+										<li><a href="..\About.html">About</a></li>
+										<li>
+											<span class="opener">Projects</span>
+											<ul>
+												<li><a href="..\ReconfigurableRadar.html">Configurable Radar</a></li>
+												<li><a href="#">RF Switch Controller</a></li>
+												<li><a href="#">Smart Home - Wireless Communications</a></li>
+											</ul>
+										</li>
+										<li>
+											<span class="opener">Blog Posts</span>
+											<ul>
+												<li><a href="..\AttenuatorArchitectureSelection.html">Attenuator Selection</a></li>
+												<li><a href="..\RFDesignGrowth-Part1.html">RF Design - Part 1</a></li>
+												<li><a href="..\RFDesignGrowth-Part2.html">RF Design - Part 2</a></li>
+												<li><a href="#">RADAR</a></li>
+											</ul>
+										</li>
+										<li>
+											<span class="opener">Amateur Radio - Basic</span>
+											<ul>
+												<li><a href="..\Amateur-Basic\Section001.html">001 - Regulations and Policies</a></li>
+												<li><a href="..\Amateur-Basic\Section002.html">002 - Operating Procedures</a></li>
+												<li><a href="..\Amateur-Basic\Section003.html">003 - Station Assembly, Practice, and Safety</a></li>
+												<li><a href="..\Amateur-Basic\Section004.html">004 - Circuit Components</a></li>
+												<li><a href="..\Amateur-Basic\Section005.html">005 - Basic Electronics and Theory</a></li>
+												<li><a href="..\Amateur-Basic\Section006.html">006 - Feedlines and Antenna Systems</a></li>
+												<li><a href="..\Amateur-Basic\Section007.html">007 - Radio Wave Propagation</a></li>
+												<li><a href="..\Amateur-Basic\Section008.html">008 - Interference and Suppresion</a></li>
+											</ul>
+										</li>
+										<li>
+											<span class="opener">Amateur Radio - Morse</span>
+											<ul>
+												<li><a href="Amateur-Morse\MorsePractice.html">Morse Code Practice</a></li>
+											</ul>
+										</li>
+									</ul>
+								</nav>
+
+							<!-- Section -->
+								<section>
+									<header class="major">
+										<h2>Recent</h2>
+									</header>
+									<div class="mini-posts">
+										<article>
+											<a href="AttenuatorArchitectureSelection.html" class="image"><img src="images/Blog_AttenArch/Attenuator_PiAtten_Sonnet.jpg" alt="" /></a>
+											<p>Comparing common attenuator architectures</p>
+										</article>
+										<article>
+											<a href="RFDesignGrowth-Part1.html" class="image"><img src="images/Growth-pt1/tong-zhou-eHE-uhLV5-I-unsplash.jpg" alt="" /></a>
+											<p>Sharing what I've learned since university - part 1</p>
+										</article>
+										<article>
+											<a href="RFDesignGrowth-Part2.html" class="image"><img src="images/Growth-pt2/nasa-Q1p7bh3SHj8-unsplash.jpg" alt="" /></a>
+											<p>Sharing what I've learned since university - part 2</p>
+										</article>
+									</div>
+									<ul class="actions">
+										<li><a href="BlogSplash.html" class="button">More</a></li>
+									</ul>
+								</section>
+
+							<!-- Section -->
+								<section>
+									<header class="major">
+										<h2>Get in touch</h2>
+									</header>
+									<p>Feel free to reach out to me if you find any of the information is misleading or incorrect </p>
+									<ul class="contact">
+										<li class="icon brands fa-github"><a href="https://github.com/sjdorsay">Github</a></li>
+										<li class="icon brands fa-discord"><a href="https://discord.gg/gheNfAHkad">Discord</a></li>
+									</ul>
+								</section>
+
+							<!-- Footer -->
+								<footer id="footer">
+									<p class="copyright">&copy; 2022. All rights reserved. <br />
+									Demo Images: <a href="https://unsplash.com">Unsplash</a> <br />
+									Design: <a href="https://html5up.net">HTML5 UP</a></p>
+								</footer>
+						</div>
+					</div>
+			</div>
+			
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>
